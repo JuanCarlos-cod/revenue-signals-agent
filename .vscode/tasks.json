@@ -1,0 +1,109 @@
+{
+  // Ejecutar: Terminal > Run Task... (o Ctrl+Shift+P > "Tasks: Run Task")
+  "version": "2.0.0",
+  "options": {
+    "env": { "PYTHONIOENCODING": "utf-8" }
+  },
+  "presentation": { "reveal": "always", "panel": "shared", "clear": true },
+  "tasks": [
+    {
+      "label": "1. Analizar las fuentes",
+      "type": "shell",
+      "command": "python -m revenue_agent analizar",
+      "problemMatcher": []
+    },
+    {
+      "label": "2. Investigar una señal",
+      "type": "shell",
+      "command": "python -m revenue_agent investigar ${input:senal}",
+      "problemMatcher": []
+    },
+    {
+      "label": "3. Agregar un documento nuevo",
+      "type": "shell",
+      "command": "python -m revenue_agent agregar \"${input:documento}\"",
+      "problemMatcher": []
+    },
+    {
+      "label": "4. Agregar el archivo abierto en el editor",
+      "type": "shell",
+      "command": "python -m revenue_agent agregar \"${file}\"",
+      "problemMatcher": []
+    },
+    {
+      "label": "5. Restaurar las 18 fuentes originales",
+      "type": "shell",
+      "command": "if (Test-Path data\\fuentes_adicionales) { Remove-Item -Recurse -Force data\\fuentes_adicionales }; python -m revenue_agent analizar",
+      "options": { "shell": { "executable": "powershell.exe", "args": ["-NoProfile", "-Command"] } },
+      "problemMatcher": []
+    },
+    {
+      "label": "6. Pruebas unitarias",
+      "type": "shell",
+      "command": "python -m unittest discover -s tests -v",
+      "group": { "kind": "test", "isDefault": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "7. Comprobación completa (probar.ps1)",
+      "type": "shell",
+      "command": "powershell -ExecutionPolicy Bypass -File .\\probar.ps1",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "8. Ensayo de entrevista (ensayo.ps1)",
+      "type": "shell",
+      "command": "powershell -ExecutionPolicy Bypass -File .\\ensayo.ps1",
+      "presentation": { "focus": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "9. Consultar la herramienta (--pretty)",
+      "type": "shell",
+      "command": "python herramientas\\consultar_parametros_pretty.py \"${input:producto}\" ${input:canal} ${input:parametro} --pretty",
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "senal",
+      "type": "pickString",
+      "description": "¿Qué señal quieres investigar?",
+      "options": ["S1", "S2", "S3", "S4"],
+      "default": "S1"
+    },
+    {
+      "id": "documento",
+      "type": "pickString",
+      "description": "¿Qué documento de ensayo agregas?",
+      "options": [
+        "ejemplos_entrevista/F19_confirmacion_tasa_web.md",
+        "ejemplos_entrevista/F20_comision_duplicada_app.md",
+        "ejemplos_entrevista/F21_muestra_ajustada_web.md",
+        "ejemplos_entrevista/F22_selector_en_produccion.md",
+        "ejemplos_entrevista/F23_tarifa_estacionamiento.md",
+        "ejemplos_entrevista/F24_comision_identificada.md",
+        "ejemplos_entrevista/nota_sin_cabecera.md"
+      ]
+    },
+    {
+      "id": "producto",
+      "type": "pickString",
+      "description": "Producto",
+      "options": ["Credito Flexible", "Tarjeta TC"]
+    },
+    {
+      "id": "canal",
+      "type": "pickString",
+      "description": "Canal",
+      "options": ["Web", "Sucursal", "general"]
+    },
+    {
+      "id": "parametro",
+      "type": "pickString",
+      "description": "Parámetro",
+      "options": ["rate_input", "selector_dia_pago", "exoneracion_membresia"]
+    }
+  ]
+}

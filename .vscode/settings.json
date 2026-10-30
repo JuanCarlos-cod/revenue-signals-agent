@@ -1,0 +1,7 @@
+{
+  // Pestaña "Testing" (icono del matraz) de VS Code con la extensión de Python.
+  "python.testing.unittestEnabled": true,
+  "python.testing.pytestEnabled": false,
+  "python.testing.unittestArgs": ["-v", "-s", "./tests", "-p", "test_*.py"],
+  "terminal.integrated.env.windows": { "PYTHONIOENCODING": "utf-8" }
+}

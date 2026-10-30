@@ -1,0 +1,35 @@
+{
+  // Depurar con F5 (requiere la extensión "Python Debugger" de Microsoft).
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Analizar (depurar)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "revenue_agent",
+      "args": ["analizar"],
+      "cwd": "${workspaceFolder}",
+      "env": { "PYTHONIOENCODING": "utf-8" },
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Investigar S1 (depurar)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "revenue_agent",
+      "args": ["investigar", "S1"],
+      "cwd": "${workspaceFolder}",
+      "env": { "PYTHONIOENCODING": "utf-8" },
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Pruebas unitarias (depurar)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "unittest",
+      "args": ["discover", "-s", "tests", "-v"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    }
+  ]
+}
