@@ -1,0 +1,19 @@
+id,fecha,tipo,area,titulo,archivo
+F01,2026-09-03,Teams,Canales Digitales,Parametrización desgravamen web,fuentes/F01.md
+F02,2026-09-05,Ficha técnica,Seguros,Definición de tasa de desgravamen,fuentes/F02.md
+F03,2026-09-07,Acta de reunión,Tecnología,Revisión de canal Web,fuentes/F03.md
+F04,2026-09-09,Correo,Operaciones,Consulta de cobros Web,fuentes/F04.md
+F05,2026-09-10,Teams,Tarjetas,Campaña de exoneración,fuentes/F05.md
+F06,2026-09-11,Política comercial,Tarjetas,Exoneraciones vigentes,fuentes/F06.md
+F07,2026-09-12,Acta de reunión,Marketing y Finanzas,Campaña de retención,fuentes/F07.md
+F08,2026-09-13,Correo,Producto Crédito,Día de pago flexible,fuentes/F08.md
+F09,2026-09-14,Documento de producto,Créditos,Condiciones de calendario de pagos,fuentes/F09.md
+F10,2026-09-15,Teams,Experiencia Cliente,Reclamos por fechas de pago,fuentes/F10.md
+F11,2026-09-16,Acta,Riesgos y Producto,Estado de piloto de fechas,fuentes/F11.md
+F12,2026-09-17,Correo,Canales,Aclaración sobre piloto,fuentes/F12.md
+F13,2026-09-18,Teams,Tesorería,Actualización de dashboard,fuentes/F13.md
+F14,2026-09-19,Correo,Recursos Humanos,Campaña interna de bienestar,fuentes/F14.md
+F15,2026-09-20,Acta,Infraestructura,Mantenimiento de servidores,fuentes/F15.md
+F16,2026-09-21,Documento,Comunicaciones,Actualización de manual de marca,fuentes/F16.md
+F17,2026-09-22,Teams,Banca Mayorista,Simplificación tarifaria,fuentes/F17.md
+F18,2026-09-23,Correo,Finanzas Mayorista,Trazabilidad de ingresos,fuentes/F18.md

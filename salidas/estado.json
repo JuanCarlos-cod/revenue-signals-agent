@@ -1,0 +1,144 @@
+{
+  "generado": "2026-10-29T21:46:52",
+  "modo": "reglas",
+  "documentos": [
+    "F01",
+    "F02",
+    "F03",
+    "F04",
+    "F05",
+    "F06",
+    "F07",
+    "F08",
+    "F09",
+    "F10",
+    "F11",
+    "F12",
+    "F13",
+    "F14",
+    "F15",
+    "F16",
+    "F17",
+    "F18"
+  ],
+  "descartados": [
+    "F13",
+    "F14",
+    "F15",
+    "F16"
+  ],
+  "senales": {
+    "S1": {
+      "nombre": "Tasa de desgravamen posiblemente mal parametrizada en canal Web",
+      "rank": 1,
+      "prioridad": 5.0,
+      "estado": "Por validar",
+      "fuentes": [
+        "F01",
+        "F02",
+        "F03",
+        "F04"
+      ],
+      "conteo": {
+        "hecho": 4,
+        "confirmacion": 0,
+        "hipotesis": 2,
+        "faltante": 7,
+        "advertencia": 3,
+        "correccion": 0,
+        "negacion_impacto": 0
+      },
+      "hipotesis": {
+        "En una revisión de configuración, Andrea comenta que la tasa registrada parece coincidir con el valor mensual informado en la ficha comercial.": "",
+        "Operaciones detectó que la prima promedio registrada para algunos créditos originados en Web es inferior a la de operaciones aparentemente similares.": ""
+      },
+      "consultas": {
+        "Web/rate_input": "no_verificado",
+        "Sucursal/rate_input": "conforme"
+      },
+      "contradicciones": []
+    },
+    "S4": {
+      "nombre": "Depuración del tarifario de Banca Mayorista",
+      "rank": 2,
+      "prioridad": 2.8,
+      "estado": "Por validar",
+      "fuentes": [
+        "F17",
+        "F18"
+      ],
+      "conteo": {
+        "hecho": 0,
+        "confirmacion": 0,
+        "hipotesis": 1,
+        "faltante": 4,
+        "advertencia": 1,
+        "correccion": 0,
+        "negacion_impacto": 0
+      },
+      "hipotesis": {
+        "El equipo de Mayorista comenta que varias comisiones del tarifario son de uso excepcional y algunas podrían no estar vigentes.": ""
+      },
+      "consultas": {},
+      "contradicciones": []
+    },
+    "S2": {
+      "nombre": "Ampliación de la exoneración de membresía de tarjeta",
+      "rank": 3,
+      "prioridad": 2.55,
+      "estado": "Por validar",
+      "fuentes": [
+        "F05",
+        "F06",
+        "F07"
+      ],
+      "conteo": {
+        "hecho": 2,
+        "confirmacion": 0,
+        "hipotesis": 2,
+        "faltante": 2,
+        "advertencia": 1,
+        "correccion": 0,
+        "negacion_impacto": 0
+      },
+      "hipotesis": {
+        "El equipo de tarjetas planea extender una campaña de exoneración de membresía para clientes con consumo anual superior a cierto umbral.": "",
+        "Marketing anticipa mayor retención si se amplía la exoneración.": ""
+      },
+      "consultas": {},
+      "contradicciones": []
+    },
+    "S3": {
+      "nombre": "Selector de día de pago en Banca Web",
+      "rank": 4,
+      "prioridad": 2.0,
+      "estado": "Por validar · contradicción resuelta",
+      "fuentes": [
+        "F08",
+        "F09",
+        "F10",
+        "F11",
+        "F12"
+      ],
+      "conteo": {
+        "hecho": 5,
+        "confirmacion": 0,
+        "hipotesis": 2,
+        "faltante": 4,
+        "advertencia": 1,
+        "correccion": 3,
+        "negacion_impacto": 0
+      },
+      "hipotesis": {
+        "Producto está evaluando permitir al cliente seleccionar entre tres fechas de pago en Banca Web.": "",
+        "En el acta se señala que el piloto de fechas de pago ya estaría habilitado para un grupo pequeño.": "superada por F12"
+      },
+      "consultas": {
+        "Web/selector_dia_pago": "no_desplegado"
+      },
+      "contradicciones": [
+        "F12→F11"
+      ]
+    }
+  }
+}

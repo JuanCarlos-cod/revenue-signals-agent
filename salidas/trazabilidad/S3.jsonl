@@ -1,0 +1,12 @@
+{"paso": 1, "accion": "asignar_fuente", "detalle": "F08 (2026-09-13, Correo) por términos: fechas de pago, dia de pago, desembolso.", "fuente": "F08"}
+{"paso": 2, "accion": "asignar_fuente", "detalle": "F09 (2026-09-14, Documento de producto) por términos: dia de pago, calendario de pagos, devengo.", "fuente": "F09"}
+{"paso": 3, "accion": "asignar_fuente", "detalle": "F10 (2026-09-15, Teams) por términos: fechas de pago.", "fuente": "F10"}
+{"paso": 4, "accion": "asignar_fuente", "detalle": "F11 (2026-09-16, Acta) por términos: fechas de pago, piloto de fechas, piloto.", "fuente": "F11"}
+{"paso": 5, "accion": "asignar_fuente", "detalle": "F12 (2026-09-17, Correo) por términos: selector de fechas, piloto.", "fuente": "F12"}
+{"paso": 6, "accion": "clasificar_afirmaciones", "detalle": "15 citas literales verificadas contra el texto original: {'hecho': 5, 'hipotesis': 2, 'faltante': 4, 'advertencia': 1, 'correccion': 3}."}
+{"paso": 7, "accion": "resolver_contradiccion", "detalle": "Prevalece F12 (2026-09-17, Canales) sobre F11 (2026-09-16): es posterior y corrige explícitamente la versión anterior.", "fuentes": ["F11", "F12"]}
+{"paso": 8, "accion": "decidir_herramienta", "detalle": "Consultar Credito Flexible / Web / selector_dia_pago. Desambiguar si el selector está desplegado en producción. Disparador: «habilitado» en F11.", "fuentes": ["F11"]}
+{"paso": 9, "accion": "consultar_herramienta", "detalle": "Configurado como 'maqueta' y no desplegado en producción.", "comando": "python herramientas/consultar_parametros.py \"Credito Flexible\" Web selector_dia_pago", "respuesta": {"consulta": {"producto": "Credito Flexible", "canal": "Web", "parametro": "selector_dia_pago"}, "encontrado": true, "registros": [{"producto": "Credito Flexible", "canal": "Web", "parametro": "selector_dia_pago", "unidad_esperada": "opciones", "valor_configurado": "maqueta", "estado_produccion": "no_desplegado", "ultima_revision": "2026-09-17"}], "advertencia": "Registro simulado; contrastar con fuentes y no inferir leakage cuantificado"}}
+{"paso": 10, "accion": "verificar_contradiccion", "detalle": "La herramienta respalda a F12: Configurado como 'maqueta' y no desplegado en producción.", "fuentes": ["F11", "F12"]}
+{"paso": 11, "accion": "priorizar", "detalle": "Impacto 2/5 × confianza 1.0 = 2.0 (evidencia 5.0/5: 5 hechos, 5 fuentes, 0 confirmaciones, 1 consultas con registro)."}
+{"paso": 12, "accion": "pendientes", "detalle": "4 datos faltantes sin resolver.", "fuentes": ["F08", "F09", "F10", "F11"]}

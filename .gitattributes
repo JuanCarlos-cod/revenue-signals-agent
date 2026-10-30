@@ -1,0 +1,5 @@
+# Los archivos del reto se guardan byte a byte (sin conversión de saltos de línea),
+# para que sus hashes coincidan con los originales en cualquier sistema.
+data/** -text
+herramientas/consultar_parametros.py -text
+herramientas/parametros_simulados.json -text

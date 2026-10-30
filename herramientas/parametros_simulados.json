@@ -1,0 +1,38 @@
+[
+  {
+    "producto": "Credito Flexible",
+    "canal": "Web",
+    "parametro": "rate_input",
+    "unidad_esperada": "anual",
+    "valor_configurado": "pendiente_de_validar",
+    "estado_produccion": "sin_confirmacion",
+    "ultima_revision": "2026-09-06"
+  },
+  {
+    "producto": "Credito Flexible",
+    "canal": "Sucursal",
+    "parametro": "rate_input",
+    "unidad_esperada": "anual",
+    "valor_configurado": "anual",
+    "estado_produccion": "vigente",
+    "ultima_revision": "2026-09-06"
+  },
+  {
+    "producto": "Tarjeta TC",
+    "canal": "general",
+    "parametro": "exoneracion_membresia",
+    "unidad_esperada": "regla_por_segmento",
+    "valor_configurado": "segun_politica_vigente",
+    "estado_produccion": "vigente",
+    "ultima_revision": "2026-09-15"
+  },
+  {
+    "producto": "Credito Flexible",
+    "canal": "Web",
+    "parametro": "selector_dia_pago",
+    "unidad_esperada": "opciones",
+    "valor_configurado": "maqueta",
+    "estado_produccion": "no_desplegado",
+    "ultima_revision": "2026-09-17"
+  }
+]

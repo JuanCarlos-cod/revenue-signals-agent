@@ -1,0 +1,2 @@
+# Solo para --modo llm. El modo por defecto (reglas) usa únicamente la biblioteca estándar.
+anthropic

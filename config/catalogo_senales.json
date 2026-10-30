@@ -1,0 +1,100 @@
+{
+  "version": 1,
+  "descripcion": "Catálogo de dominio: temas de ingreso conocidos, términos para asignar documentos, política de consulta a la herramienta y acciones sugeridas. Es configuración editable, no datos de las fuentes.",
+  "terminos_economicos": ["tarifa", "comision", "prima", "tasa", "cobr", "ingreso", "membresia", "exoneracion", "devengo", "flujo", "costo", "precio", "cargo", "desviacion", "materialidad", "desgravamen"],
+  "impacto_emergente": 3,
+  "temas": [
+    {
+      "id": "S1",
+      "nombre": "Tasa de desgravamen posiblemente mal parametrizada en canal Web",
+      "naturaleza": "Posible fuga de ingreso recurrente",
+      "impacto": 5,
+      "justificacion_impacto": "Si el motor mensualiza un valor que ya es mensual, la prima cobrada sería cercana a 1/12 de la correcta en cada crédito Web afectado. Es recurrente mientras la configuración siga activa.",
+      "terminos_fuertes": ["desgravamen", "rate_input", "tasa anual", "valor mensual", "mensualizacion", "anual-a-mensual", "prima"],
+      "terminos_debiles": ["tasa", "seguro", "parametrizacion", "canal web"],
+      "consultas": [
+        {
+          "producto": "Credito Flexible",
+          "canal": "Web",
+          "parametro": "rate_input",
+          "motivo": "Verificar el valor cargado en Web, que es el objeto de la hipótesis.",
+          "disparadores": ["parametrizacion", "valor cargado", "tasa registrada", "rate_input"]
+        },
+        {
+          "producto": "Credito Flexible",
+          "canal": "Sucursal",
+          "parametro": "rate_input",
+          "motivo": "Obtener una línea base de otro canal para contrastar con Web.",
+          "disparadores": ["otros canales", "entre canales"]
+        }
+      ],
+      "acciones": [
+        "Confirmar con Canales Digitales el valor de rate_input en producción (no en certificación).",
+        "Obtener el adjunto citado por Operaciones y una muestra de operaciones con igual saldo asegurado y periodo de cobertura.",
+        "Solo tras la confirmación, cuantificar la diferencia de prima por operación y el periodo afectado."
+      ]
+    },
+    {
+      "id": "S2",
+      "nombre": "Ampliación de la exoneración de membresía de tarjeta",
+      "naturaleza": "Decisión comercial pendiente: retención vs. ingreso por membresía",
+      "impacto": 3,
+      "justificacion_impacto": "Afecta el ingreso por membresía de un segmento de clientes. Puede compensarse con retención, pero no está cuantificado en ninguna dirección.",
+      "terminos_fuertes": ["exoneracion", "membresia"],
+      "terminos_debiles": ["tarjeta", "retencion", "umbral"],
+      "consultas": [
+        {
+          "producto": "Tarjeta TC",
+          "canal": "general",
+          "parametro": "exoneracion_membresia",
+          "motivo": "Comprobar si un cambio de regla ya fue cargado en parámetros.",
+          "disparadores": ["ya se cargo", "se parametrizo", "regla cargada", "nueva regla vigente"]
+        }
+      ],
+      "acciones": [
+        "Definir el umbral propuesto y estimar los clientes elegibles por segmento.",
+        "Modelar el ingreso por membresía perdido frente a la retención incremental (canibalización).",
+        "Solicitar aprobación formal solo con los escenarios evaluados."
+      ]
+    },
+    {
+      "id": "S3",
+      "nombre": "Selector de día de pago en Banca Web",
+      "naturaleza": "Propuesta de producto con impacto financiero no evaluado",
+      "impacto": 2,
+      "justificacion_impacto": "Puede alterar devengo, flujos y reglas de corte. Es una propuesta sin despliegue y con evidencia de demanda débil.",
+      "terminos_fuertes": ["fecha de pago", "fechas de pago", "dia de pago", "calendario de pagos", "selector de fechas", "piloto de fechas"],
+      "terminos_debiles": ["piloto", "devengo", "desembolso"],
+      "consultas": [
+        {
+          "producto": "Credito Flexible",
+          "canal": "Web",
+          "parametro": "selector_dia_pago",
+          "motivo": "Desambiguar si el selector está desplegado en producción.",
+          "disparadores": ["habilitado", "habilitacion", "produccion", "despliegue"]
+        }
+      ],
+      "acciones": [
+        "Mantener el estado como propuesta mientras no exista habilitación productiva.",
+        "Simular el impacto financiero en devengo, flujos y reglas de corte.",
+        "Validar la preferencia de clientes con una muestra representativa y segmentada."
+      ]
+    },
+    {
+      "id": "S4",
+      "nombre": "Depuración del tarifario de Banca Mayorista",
+      "naturaleza": "Riesgo de pérdida de ingreso por retiro de comisiones",
+      "impacto": 4,
+      "justificacion_impacto": "Retirar comisiones de baja frecuencia sin conciliarlas puede eliminar ingresos materiales que no se recuperan.",
+      "terminos_fuertes": ["tarifario", "codigo de tarifa", "codigos de tarifa", "mayorista", "depurar"],
+      "terminos_debiles": ["comision", "comisiones", "cuentas contables"],
+      "consultas": [],
+      "nota_herramienta": "La base de parámetros no tiene registros de tarifas mayoristas; consultarla no aportaría evidencia.",
+      "acciones": [
+        "Inventariar las comisiones con su frecuencia, monto y cuenta contable.",
+        "Conciliar código de tarifa, tipo de transacción y cuenta contable antes de retirar cualquier comisión.",
+        "Identificar el código de la comisión cobrada una sola vez el trimestre anterior y evaluar su materialidad."
+      ]
+    }
+  ]
+}

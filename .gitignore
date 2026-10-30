@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+salidas/cache_llm/
+salidas/estado_anterior.json
+data/fuentes_adicionales/

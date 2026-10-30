@@ -1,0 +1,7 @@
+{"paso": 1, "accion": "asignar_fuente", "detalle": "F05 (2026-09-10, Teams) por términos: exoneracion, membresia, tarjeta, umbral.", "fuente": "F05"}
+{"paso": 2, "accion": "asignar_fuente", "detalle": "F06 (2026-09-11, Política comercial) por términos: exoneracion, membresia, umbral.", "fuente": "F06"}
+{"paso": 3, "accion": "asignar_fuente", "detalle": "F07 (2026-09-12, Acta de reunión) por términos: exoneracion, membresia, retencion.", "fuente": "F07"}
+{"paso": 4, "accion": "clasificar_afirmaciones", "detalle": "7 citas literales verificadas contra el texto original: {'hecho': 2, 'hipotesis': 2, 'faltante': 2, 'advertencia': 1}."}
+{"paso": 5, "accion": "omitir_herramienta", "detalle": "Tarjeta TC / general / exoneracion_membresia: ninguna hipótesis o dato faltante lo justifica.", "parametros": {"producto": "Tarjeta TC", "canal": "general", "parametro": "exoneracion_membresia", "motivo": "Comprobar si un cambio de regla ya fue cargado en parámetros.", "disparadores": ["ya se cargo", "se parametrizo", "regla cargada", "nueva regla vigente"]}}
+{"paso": 6, "accion": "priorizar", "detalle": "Impacto 3/5 × confianza 0.85 = 2.55 (evidencia 3.5/5: 2 hechos, 3 fuentes, 0 confirmaciones, 0 consultas con registro)."}
+{"paso": 7, "accion": "pendientes", "detalle": "2 datos faltantes sin resolver.", "fuentes": ["F05", "F07"]}
