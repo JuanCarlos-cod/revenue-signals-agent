@@ -144,6 +144,34 @@ def _marcar_confirmaciones(s: Senal) -> None:
                         f"{conf.doc_id} confirma la hipótesis de {hip.doc_id}.", fuentes=[hip.doc_id, conf.doc_id])
 
 
+def _resolver_faltantes(s: Senal) -> None:
+    """Una oración posterior (hecho, confirmación o corrección) resuelve como máximo UN dato faltante:
+    el que comparte al menos 3 raíces y la mayor proporción de las suyas (ante empate, el más antiguo).
+    No se borra: se marca, para que se vea qué lo resolvió."""
+    orden = {d.id: d.orden for d in s.docs}
+    for doc in s.docs:
+        for aporte in s.afirmaciones:
+            if aporte.doc_id != doc.id or aporte.tipo not in ("hecho", "confirmacion", "correccion"):
+                continue
+            raices = _raices(aporte.cita)
+            candidatos = []
+            for f in s.de_tipo("faltante"):
+                comun = raices & _raices(f.cita)
+                if not f.nota and orden[f.doc_id] < doc.orden and len(comun) >= 3:
+                    candidatos.append((len(comun) / len(_raices(f.cita)), _invertir(orden[f.doc_id]), f))
+            if candidatos:
+                f = max(candidatos, key=lambda c: (c[0], c[1]))[2]
+                f.nota = f"resuelto por {doc.id}"
+                _evento(s.traza, "resolver_faltante",
+                        f"{doc.id} responde a la duda de {f.doc_id}: «{' '.join(f.cita.split())}»",
+                        fuentes=[f.doc_id, doc.id])
+
+
+def _invertir(orden: tuple[str, str]) -> tuple:
+    """Clave para que, a igual puntuación, gane el documento más antiguo."""
+    return tuple(tuple(-ord(c) for c in parte) for parte in orden)
+
+
 def _detectar_contradicciones(s: Senal) -> None:
     """Una corrección que alude a una fuente previa se enfrenta a la afirmación anterior más afín
     (hipótesis o hecho): gana la que comparte más raíces, y ante empate la más reciente."""
@@ -153,6 +181,24 @@ def _detectar_contradicciones(s: Senal) -> None:
         if not explicitas:
             continue
         corr = explicitas[0]
+        # 1) Si la corrección responde la duda abierta de una fuente previa, esa fuente es la corregida
+        #    y sus hipótesis quedan refutadas (p. ej. "la captura era de certificación" responde a F01).
+        dudas = [(len(_raices(corr.cita) & _raices(f.cita)), f) for f in s.de_tipo("faltante")
+                 if f.nota == f"resuelto por {doc.id}"]
+        if dudas:
+            _, duda = max(dudas, key=lambda d: d[0])
+            previo = next(d for d in s.docs if d.id == duda.doc_id)
+            refutadas = [h for h in s.de_tipo("hipotesis") if h.doc_id == previo.id and not h.nota]
+            for h in refutadas:
+                h.nota = f"refutada por {doc.id}"
+            resolucion = (f"Prevalece {doc.id} ({doc.fecha}, {doc.area}) sobre {previo.id} ({previo.fecha}): "
+                          f"responde la duda que {previo.id} dejaba abierta y contradice su hipótesis.")
+            s.contradicciones.append({"fuente_corregida": previo.id, "fuente_que_corrige": doc.id,
+                                      "afirmacion_original": refutadas[0].cita if refutadas else duda.cita,
+                                      "correccion": corr.cita, "resolucion": resolucion})
+            _evento(s.traza, "resolver_contradiccion", resolucion, fuentes=[previo.id, doc.id])
+            continue
+        # 2) Si no, se enfrenta a la afirmación previa más afín.
         propias = [a.cita for a in s.afirmaciones if a.doc_id == doc.id and a.tipo in ("correccion", "hecho", "confirmacion")]
         base = _raices(doc.titulo + " " + " ".join(propias))
         menciona_tipo = normalizar(corr.cita)
@@ -170,7 +216,7 @@ def _detectar_contradicciones(s: Senal) -> None:
         if not candidatos:
             continue
         _, _, previo, hip = max(candidatos, key=lambda c: (c[0], c[1]))
-        hip.nota = f"superada por {doc.id}"
+        hip.nota = f"{'refutada' if hip.tipo == 'hipotesis' else 'superada'} por {doc.id}"
         resolucion = (f"Prevalece {doc.id} ({doc.fecha}, {doc.area}) sobre {previo.id} ({previo.fecha}): "
                       f"es posterior y corrige explícitamente la versión anterior.")
         s.contradicciones.append({"fuente_corregida": previo.id, "fuente_que_corrige": doc.id,
@@ -224,11 +270,21 @@ def _puntuar_senal(s: Senal) -> None:
     confirmaciones = len(s.de_tipo("confirmacion"))
     consultas_utiles = sum(1 for c in s.consultas if c["resultado"] not in ("sin_registro", "error"))
     s.evidencia = round(min(5.0, 1 + 0.5 * hechos + 0.5 * len(s.docs) + 1.5 * confirmaciones + 0.5 * consultas_utiles), 2)
-    s.confianza = round(0.5 + 0.1 * s.evidencia, 2)
+    # Las hipótesis refutadas por fuentes posteriores restan confianza: hasta la mitad si caen todas.
+    hipotesis = s.de_tipo("hipotesis")
+    refutadas = [h for h in hipotesis if h.nota.startswith("refutada")]
+    factor = 1 - 0.5 * len(refutadas) / len(hipotesis) if hipotesis else 1
+    s.confianza = round((0.5 + 0.1 * s.evidencia) * factor, 2)
     s.prioridad = round(s.impacto * s.confianza, 2)
+    abiertas = [h for h in hipotesis if not h.nota]
+    faltantes = [f for f in s.de_tipo("faltante") if not f.nota]
     if confirmaciones:
         s.estado = "Confirmada en fuente; impacto pendiente de cuantificar"
-    elif s.de_tipo("hipotesis", "faltante"):
+    elif refutadas and not abiertas:
+        s.estado = "Hipótesis refutada"
+    elif refutadas:
+        s.estado = "Hipótesis refutada en parte; por validar"
+    elif abiertas or faltantes:
         s.estado = "Por validar"
     else:
         s.estado = "Documentada"
@@ -237,7 +293,8 @@ def _puntuar_senal(s: Senal) -> None:
     _evento(s.traza, "priorizar",
             f"Impacto {s.impacto}/5 × confianza {s.confianza} = {s.prioridad} "
             f"(evidencia {s.evidencia}/5: {hechos} hechos, {len(s.docs)} fuentes, {confirmaciones} confirmaciones, "
-            f"{consultas_utiles} consultas con registro).")
+            f"{consultas_utiles} consultas con registro; {len(refutadas)} de {len(hipotesis)} hipótesis refutadas, "
+            f"factor {round(factor, 2)}).")
 
 
 def _redactar(s: Senal, modo: str, traza_global: list[dict], uso: list[dict]) -> None:
@@ -262,6 +319,13 @@ def _redactar(s: Senal, modo: str, traza_global: list[dict], uso: list[dict]) ->
                           f"{', '.join(conformes)} está conforme. {cierre}")
     for c in s.contradicciones:
         partes.append(c["resolucion"] + (f" {c['verificacion']}" if c.get("verificacion") else ""))
+    refutadas = [h for h in s.de_tipo("hipotesis") if h.nota.startswith("refutada")]
+    resueltos = [f for f in s.de_tipo("faltante") if f.nota]
+    if refutadas:
+        partes.append(f"{len(refutadas)} hipótesis refutada(s) por fuentes posteriores "
+                      f"({', '.join(sorted({h.doc_id for h in refutadas}))}): la confianza en la señal baja.")
+    if resueltos:
+        partes.append(f"{len(resueltos)} dato(s) faltante(s) ya respondido(s) por fuentes posteriores.")
     if s.de_tipo("confirmacion"):
         partes.append("Existe confirmación en fuente, pero el impacto económico sigue sin cuantificar.")
     else:
@@ -382,13 +446,14 @@ def analizar(modo: str = "reglas", extra: list[Path] | tuple[Path, ...] = ()) ->
         _evento(s.traza, "clasificar_afirmaciones",
                 f"{len(s.afirmaciones)} citas literales verificadas contra el texto original: {conteo}.")
         _marcar_confirmaciones(s)
+        _resolver_faltantes(s)
         _detectar_contradicciones(s)
         _decidir_herramienta(s)
         _puntuar_senal(s)
         _redactar(s, modo, traza, uso)
-        _evento(s.traza, "pendientes",
-                f"{len(s.de_tipo('faltante'))} datos faltantes sin resolver.",
-                fuentes=sorted({f.doc_id for f in s.de_tipo("faltante")}))
+        abiertos = [f for f in s.de_tipo("faltante") if not f.nota]
+        _evento(s.traza, "pendientes", f"{len(abiertos)} datos faltantes sin resolver.",
+                fuentes=sorted({f.doc_id for f in abiertos}))
 
     ordenadas = sorted(senales.values(), key=lambda s: (-s.prioridad, s.id))
     for i, s in enumerate(ordenadas, 1):
@@ -411,6 +476,7 @@ def resumen_estado(r: Resultado) -> dict:
                 "fuentes": [d.id for d in s.docs],
                 "conteo": {t: len(s.de_tipo(t)) for t in clasificador.TIPOS},
                 "hipotesis": {a.cita: a.nota for a in s.de_tipo("hipotesis")},
+                "faltantes": {a.cita: a.nota for a in s.de_tipo("faltante")},
                 "consultas": {f"{c['parametros']['canal']}/{c['parametros']['parametro']}": c["resultado"]
                               for c in s.consultas},
                 "contradicciones": [f"{c['fuente_que_corrige']}→{c['fuente_corregida']}" for c in s.contradicciones],
@@ -448,9 +514,10 @@ def comparar(anterior: dict, actual: dict) -> list[str]:
             delta = n - p["conteo"].get(tipo, 0)
             if delta:
                 cambios.append(f"{sid}: {clasificador.ETIQUETAS[tipo]} {delta:+d}.")
-        for cita, nota in s["hipotesis"].items():
-            if nota and p["hipotesis"].get(cita) != nota:
-                cambios.append(f"{sid}: hipótesis «{cita[:80]}…» ahora {nota}.")
+        for clave, etiqueta in (("hipotesis", "hipótesis"), ("faltantes", "dato faltante")):
+            for cita, nota in s.get(clave, {}).items():
+                if nota and p.get(clave, {}).get(cita) != nota:
+                    cambios.append(f"{sid}: {etiqueta} «{' '.join(cita.split())[:80]}…» ahora {nota}.")
         for clave, res in s["consultas"].items():
             if p["consultas"].get(clave) != res:
                 cambios.append(f"{sid}: herramienta {clave}: {p['consultas'].get(clave, 'sin consulta')} → {res}.")

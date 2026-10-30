@@ -86,14 +86,20 @@ docs/                         Enunciado original y guía de recursos
 4. **Agrupación en señales.** Cada documento se asigna al tema del catálogo con más coincidencias de
    términos (fuertes = 2 puntos, débiles = 1; mínimo 2). Un documento con potencial económico que no
    encaja en ningún tema crea una **señal emergente** (`E-Fxx`).
-5. **Confirmaciones y contradicciones.** Una confirmación posterior marca como «confirmada» la hipótesis
-   previa afín. Una corrección que alude a una fuente anterior se enfrenta a la hipótesis previa más
-   afín: prevalece la fuente posterior que corrige explícitamente, y la contradicción se reporta.
+5. **Actualización ante evidencia nueva.** Se compara cada fuente con las anteriores:
+   - una **confirmación** posterior marca la hipótesis previa afín como «confirmada por Fxx»;
+   - un hecho, confirmación o corrección posterior que responde a un **dato faltante** lo marca como
+     «resuelto por Fxx» (cada oración resuelve como máximo una duda, la más específica);
+   - una **corrección** que alude a una fuente anterior la contradice: si responde la duda que esa fuente
+     dejaba abierta, sus hipótesis quedan «refutadas por Fxx»; si no, se enfrenta a la afirmación previa
+     más afín. Prevalece la fuente posterior y la contradicción se reporta.
 6. **Herramienta.** Para cada consulta configurada en el tema, el agente la ejecuta **solo si** una
    hipótesis, un dato faltante o una corrección contiene uno de sus disparadores. Registra el
    disparador, el comando, la respuesta completa y una interpretación acotada (nunca cuantifica).
-7. **Priorización.** `prioridad = impacto × confianza`, donde `confianza = 0,5 + 0,1 × evidencia` y
+7. **Priorización.** `prioridad = impacto × confianza`, donde
+   `confianza = (0,5 + 0,1 × evidencia) × (1 − 0,5 × hipótesis refutadas / hipótesis)` y
    `evidencia = 1 + 0,5·hechos + 0,5·fuentes + 1,5·confirmaciones + 0,5·consultas con registro` (máximo 5).
+   Una señal cuyas hipótesis caen pierde prioridad; si caen todas, la confianza se reduce a la mitad.
 8. **Salidas.** Brief, registro de investigación y comparación con el estado anterior.
 
 ### Resultado sobre el paquete
@@ -103,7 +109,7 @@ docs/                         Enunciado original y guía de recursos
 | 1 | S1 Tasa de desgravamen Web (F01–F04) | 5.0 | Por validar | Web `no_verificado` y Sucursal `conforme`: la duda queda acotada a Web |
 | 2 | S4 Tarifario Mayorista (F17–F18) | 2.8 | Por validar | No se consulta: la base no tiene registros aplicables |
 | 3 | S2 Exoneración de membresía (F05–F07) | 2.55 | Por validar | No se consulta: ninguna hipótesis la justifica |
-| 4 | S3 Día de pago (F08–F12) | 2.0 | Contradicción resuelta: prevalece F12 | `no_desplegado`: respalda a F12 |
+| 4 | S3 Día de pago (F08–F12) | 1.5 | Hipótesis refutada en parte (F11, por F12) · contradicción resuelta | `no_desplegado`: respalda a F12 |
 | — | F13–F16 | — | Descartados con cita | — |
 
 ## Decisiones técnicas

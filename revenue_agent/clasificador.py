@@ -24,7 +24,7 @@ ETIQUETAS = {
 _REGLAS: list[tuple[str, list[str]]] = [
     ("negacion_impacto", [r"no cambia ningun", r"no existe vinculo", r"no afectara", r"no se modificaran",
                           r"sin impacto (economico|comercial)"]),
-    ("correccion", [r"corregir", r"correccion", r"aclaracion", r"se aclara", r"rectific", r"desmient",
+    ("correccion", [r"corregir", r"correccion", r"aclaracion", r"\baclara\b", r"rectific", r"desmient",
                     r"se utilizo .* para describir", r"interpretaron", r"no distingue"]),
     ("faltante", [r"no se ha confirmado", r"no se confirma", r"nadie confirma", r"no se encuentra",
                   r"no dispone", r"no se dispone", r"no se adjunta", r"se desconoce", r"\baun no\b",

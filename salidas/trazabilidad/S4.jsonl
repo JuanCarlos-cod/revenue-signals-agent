@@ -2,5 +2,5 @@
 {"paso": 2, "accion": "asignar_fuente", "detalle": "F18 (2026-09-23, Correo) por términos: codigos de tarifa, comision, comisiones, cuentas contables.", "fuente": "F18"}
 {"paso": 3, "accion": "clasificar_afirmaciones", "detalle": "6 citas literales verificadas contra el texto original: {'hipotesis': 1, 'faltante': 4, 'advertencia': 1}."}
 {"paso": 4, "accion": "omitir_herramienta", "detalle": "La base de parámetros no tiene registros de tarifas mayoristas; consultarla no aportaría evidencia."}
-{"paso": 5, "accion": "priorizar", "detalle": "Impacto 4/5 × confianza 0.7 = 2.8 (evidencia 2.0/5: 0 hechos, 2 fuentes, 0 confirmaciones, 0 consultas con registro)."}
+{"paso": 5, "accion": "priorizar", "detalle": "Impacto 4/5 × confianza 0.7 = 2.8 (evidencia 2.0/5: 0 hechos, 2 fuentes, 0 confirmaciones, 0 consultas con registro; 0 de 1 hipótesis refutadas, factor 1.0)."}
 {"paso": 6, "accion": "pendientes", "detalle": "4 datos faltantes sin resolver.", "fuentes": ["F17", "F18"]}

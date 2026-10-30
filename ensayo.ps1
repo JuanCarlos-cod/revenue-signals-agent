@@ -12,7 +12,7 @@ $casos = @(
     @{ Archivo = "F21_muestra_ajustada_web.md";   Espera = "S1 suma hechos (la muestra ajustada) y un faltante (no validada con Finanzas)." },
     @{ Archivo = "F22_selector_en_produccion.md"; Espera = "S3: nueva contradiccion F22 -> F12. La herramienta es anterior a F22: no la valida, queda pendiente." },
     @{ Archivo = "F23_tarifa_estacionamiento.md"; Espera = "Se descarta como ruido aunque dice 'tarifa'." },
-    @{ Archivo = "F24_comision_identificada.md";  Espera = "S4 suma hechos y sube de prioridad. El faltante original de F17 sigue listado: explicalo tu." },
+    @{ Archivo = "F24_comision_identificada.md";  Espera = "S4 suma hechos y sube de prioridad. La duda de F17 (codigo de la comision) queda 'resuelto por F24'." },
     @{ Archivo = "F20_comision_duplicada_app.md"; Espera = "Aparece la senal emergente E-F20, separada de S4." },
     @{ Archivo = "nota_sin_cabecera.md";          Espera = "Sin cabecera: recibe el siguiente ID libre y la fecha de hoy, y se asigna a S1." }
 )

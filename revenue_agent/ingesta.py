@@ -68,26 +68,39 @@ def leer_cabecera(texto: str) -> dict[str, str]:
 
 
 def segmentar(doc_id: str, texto: str) -> list[Oracion]:
-    """Divide el cuerpo en oraciones guardando su posición exacta en el texto original."""
-    oraciones: list[Oracion] = []
+    """Divide el cuerpo en oraciones guardando su posición exacta en el texto original.
+    Un párrafo son líneas de cuerpo consecutivas: un salto de línea a mitad de frase no la corta."""
+    bloques: list[tuple[int, int]] = []
+    inicio_parrafo = fin_parrafo = None
     offset = 0
     for linea in texto.splitlines(keepends=True):
-        contenido = linea.rstrip("\r\n")
-        limpio = contenido.strip()
+        limpio = linea.strip()
         if limpio and not limpio.startswith("#") and not _CABECERA.match(limpio):
-            pos = 0
-            tramos = []
-            for corte in _CORTE.finditer(contenido):
-                tramos.append((pos, corte.start()))
-                pos = corte.end()
-            tramos.append((pos, len(contenido)))
-            for a, b in tramos:
-                fragmento = contenido[a:b]
-                frase = fragmento.strip()
-                if frase:
-                    inicio = offset + a + (len(fragmento) - len(fragmento.lstrip()))
-                    oraciones.append(Oracion(doc_id, len(oraciones) + 1, frase, inicio, inicio + len(frase)))
+            if inicio_parrafo is None:
+                inicio_parrafo = offset
+            fin_parrafo = offset + len(linea.rstrip("\r\n"))
+        elif inicio_parrafo is not None:
+            bloques.append((inicio_parrafo, fin_parrafo))
+            inicio_parrafo = None
         offset += len(linea)
+    if inicio_parrafo is not None:
+        bloques.append((inicio_parrafo, fin_parrafo))
+
+    oraciones: list[Oracion] = []
+    for a, b in bloques:
+        contenido = texto[a:b]
+        pos = 0
+        tramos = []
+        for corte in _CORTE.finditer(contenido):
+            tramos.append((pos, corte.start()))
+            pos = corte.end()
+        tramos.append((pos, len(contenido)))
+        for x, y in tramos:
+            fragmento = contenido[x:y]
+            frase = fragmento.strip()
+            if frase:
+                inicio = a + x + (len(fragmento) - len(fragmento.lstrip()))
+                oraciones.append(Oracion(doc_id, len(oraciones) + 1, frase, inicio, inicio + len(frase)))
     return oraciones
 
 

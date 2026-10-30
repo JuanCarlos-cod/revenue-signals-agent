@@ -9,7 +9,8 @@ from .pipeline import DIR_SALIDAS, Resultado, Senal
 
 def _cita(a) -> str:
     nota = f" — _{a.nota}_" if a.nota else ""
-    return f"- **[{a.doc_id}]** «{a.cita}»{nota}"
+    # Los saltos de línea dentro de una cita se muestran como espacio; el texto sigue siendo el original.
+    return f"- **[{a.doc_id}]** «{' '.join(a.cita.split())}»{nota}"
 
 
 def _seccion(titulo: str, afirmaciones, vacio: str) -> list[str]:
@@ -96,8 +97,9 @@ def brief(s: Senal, r: Resultado) -> str:
     for i, p in enumerate(s.proximos, 1):
         fuentes = f" [{', '.join(p['fuentes'])}]" if p["fuentes"] else ""
         lineas.append(f"{i}. {p['accion']}{fuentes}")
-    if s.de_tipo("faltante"):
-        lineas.append(f"{len(s.proximos) + 1}. Resolver los {len(s.de_tipo('faltante'))} datos faltantes listados arriba.")
+    abiertos = [f for f in s.de_tipo("faltante") if not f.nota]
+    if abiertos:
+        lineas.append(f"{len(s.proximos) + 1}. Resolver los {len(abiertos)} datos faltantes abiertos listados arriba.")
     lineas += ["", "## Fuentes consultadas", "", "| ID | Fecha | Tipo | Área | Título | Términos de asignación |",
                "|---|---|---|---|---|---|"]
     for d in s.docs:
@@ -115,9 +117,13 @@ def traza(s: Senal) -> str:
         if "comando" in e:
             detalle += f"<br>`{e['comando']}`"
         lineas.append(f"| {e['paso']} | `{e['accion']}` | {detalle} |")
-    pendientes = s.de_tipo("faltante")
+    pendientes = [f for f in s.de_tipo("faltante") if not f.nota]
     lineas += ["", "## Aspectos no resueltos", ""]
-    lineas += [f"- [{a.doc_id}] {a.cita}" for a in pendientes] or ["- Ninguno identificado."]
+    lineas += [f"- [{a.doc_id}] {' '.join(a.cita.split())}" for a in pendientes] or ["- Ninguno identificado."]
+    resueltos = [f for f in s.de_tipo("faltante") if f.nota]
+    if resueltos:
+        lineas += ["", "## Dudas resueltas por fuentes posteriores", ""]
+        lineas += [f"- [{a.doc_id}] {' '.join(a.cita.split())} — _{a.nota}_" for a in resueltos]
     respuestas = [e for e in s.traza if e["accion"] == "consultar_herramienta"]
     if respuestas:
         lineas += ["", "## Respuestas completas de la herramienta", ""]

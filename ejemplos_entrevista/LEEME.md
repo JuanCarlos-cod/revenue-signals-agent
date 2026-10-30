@@ -10,7 +10,8 @@ cómo el agente actualiza sus hallazgos cuando llega evidencia nueva.
 | `F21_muestra_ajustada_web.md` | Llega el dato que faltaba en F04 | S1 suma hechos y un nuevo faltante: la muestra no está validada con Finanzas. |
 | `F22_selector_en_produccion.md` | Una fuente corrige a otra que ya corregía | Nueva contradicción F22 → F12. La herramienta (revisada el 17-sep) es anterior a F22, así que no la valida y queda pendiente. |
 | `F23_tarifa_estacionamiento.md` | Ruido con una palabra económica | Se descarta como ruido aunque dice «tarifa». |
-| `F24_comision_identificada.md` | Se resuelve un dato faltante | S4 suma hechos y sube de prioridad. El faltante original de F17 sigue listado: el agente no marca faltantes como resueltos, explícalo tú. |
+| `F19_aclaracion_captura_web.md` | Evidencia que **refuta** una hipótesis (texto con saltos de línea a mitad de frase) | Contradicción F19 → F01: la hipótesis de F01 queda «refutada por F19», su duda (¿producción o certificación?) queda «resuelto por F19», S1 baja de 5.0 a 3.75 y el estado pasa a «Hipótesis refutada en parte; por validar». La herramienta (06-sep) es anterior a F19 y no la valida. F04 sigue abierta. |
+| `F24_comision_identificada.md` | Se resuelve un dato faltante | S4 suma hechos y sube de prioridad. La duda de F17 (el código de la comisión) queda «resuelto por F24»; las demás dudas de S4 siguen abiertas. |
 | `nota_sin_cabecera.md` | Texto suelto sin cabecera | Recibe el siguiente ID libre y la fecha de hoy, y se asigna a S1. |
 
 ## Ensayo guiado

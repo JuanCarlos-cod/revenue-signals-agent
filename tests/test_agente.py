@@ -95,6 +95,29 @@ class CasosDeEnsayo(unittest.TestCase):
         self.assertEqual(nueva["fuente_corregida"], "F12")
         self.assertIn("es anterior a F22", nueva["verificacion"])
 
+    def test_evidencia_que_refuta(self):
+        r = pipeline.analizar("reglas", extra=[EJEMPLOS / "F19_aclaracion_captura_web.md"])
+        s1 = _senal(r, "S1")
+        f01 = next(a for a in s1.de_tipo("hipotesis") if a.doc_id == "F01")
+        self.assertEqual(f01.nota, "refutada por F19")
+        self.assertTrue(any(f.doc_id == "F01" and f.nota == "resuelto por F19" for f in s1.de_tipo("faltante")))
+        self.assertLess(s1.prioridad, 5.0)
+        self.assertTrue(s1.estado.startswith("Hipótesis refutada en parte"))
+        c = next(c for c in s1.contradicciones if c["fuente_que_corrige"] == "F19")
+        self.assertEqual(c["fuente_corregida"], "F01")
+        self.assertIn("es anterior a F19", c["verificacion"])
+
+    def test_salto_de_linea_no_corta_la_oracion(self):
+        r = pipeline.analizar("reglas", extra=[EJEMPLOS / "F19_aclaracion_captura_web.md"])
+        f19 = [a.cita for a in _senal(r, "S1").afirmaciones if a.doc_id == "F19"]
+        self.assertEqual(len(f19), 3)
+        self.assertTrue(f19[-1].endswith("fechas de desembolso."))
+
+    def test_un_dato_nuevo_resuelve_una_sola_duda(self):
+        r = pipeline.analizar("reglas", extra=[EJEMPLOS / "F24_comision_identificada.md"])
+        resueltos = [f.doc_id for f in _senal(r, "S4").de_tipo("faltante") if f.nota == "resuelto por F24"]
+        self.assertEqual(resueltos, ["F17"])
+
     def test_ruido_con_palabra_tarifa(self):
         r = pipeline.analizar("reglas", extra=[EJEMPLOS / "F23_tarifa_estacionamiento.md"])
         self.assertIn("F23", [d["id"] for d in r.descartados])

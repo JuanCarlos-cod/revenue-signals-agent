@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-29T22:13:32",
+  "generado": "2026-10-30T12:42:11",
   "modo": "reglas",
   "documentos": [
     "F01",
@@ -19,7 +19,8 @@
     "F15",
     "F16",
     "F17",
-    "F18"
+    "F18",
+    "F19"
   ],
   "descartados": [
     "F13",
@@ -32,25 +33,37 @@
       "nombre": "Tasa de desgravamen posiblemente mal parametrizada en canal Web",
       "rank": 1,
       "prioridad": 5.0,
-      "estado": "Por validar",
+      "estado": "Confirmada en fuente; impacto pendiente de cuantificar",
       "fuentes": [
         "F01",
         "F02",
         "F03",
-        "F04"
+        "F04",
+        "F19"
       ],
       "conteo": {
-        "hecho": 4,
-        "confirmacion": 0,
-        "hipotesis": 2,
-        "faltante": 7,
+        "hecho": 7,
+        "confirmacion": 1,
+        "hipotesis": 3,
+        "faltante": 8,
         "advertencia": 3,
         "correccion": 0,
         "negacion_impacto": 0
       },
       "hipotesis": {
-        "En una revisión de configuración, Andrea comenta que la tasa registrada parece coincidir con el valor mensual informado en la ficha comercial.": "",
-        "Operaciones detectó que la prima promedio registrada para algunos créditos originados en Web es inferior a la de operaciones aparentemente similares.": ""
+        "En una revisión de configuración, Andrea comenta que la tasa registrada parece coincidir con el valor mensual informado en la ficha comercial.": "confirmada por F19",
+        "Operaciones detectó que la prima promedio registrada para algunos créditos originados en Web es inferior a la de operaciones aparentemente similares.": "confirmada por F19",
+        "Además, la aseguradora podría reclamar las primas no cobradas, porque la cobertura se calcula sobre el saldo asegurado completo.": ""
+      },
+      "faltantes": {
+        "No se ha confirmado si esa parametrización está activa en producción.": "",
+        "En el hilo también se menciona que la pantalla de administración permite copiar configuraciones entre canales, pero nadie confirma si la captura corresponde a producción o certificación.": "",
+        "La tasa y la vigencia exactas deben verificarse en la tabla de parámetros autorizada.": "",
+        "El equipo solicita contrastar el valor cargado para Web con el de otros canales antes de concluir que hay un defecto.": "",
+        "Se solicita análisis transaccional para confirmar una eventual desviación.": "",
+        "El archivo adjunto citado en el correo no se encuentra en esta carpeta.": "",
+        "El equipo de operaciones no dispone todavía de una muestra de operaciones con idéntico saldo y periodo de cobertura.": "",
+        "Aún no se ha definido si la diferencia se recuperará de los clientes o la asumirá el banco; se solicita a Legal y Producto una decisión antes\r\n del cierre de octubre.": ""
       },
       "consultas": {
         "Web/rate_input": "no_verificado",
@@ -79,6 +92,12 @@
       "hipotesis": {
         "El equipo de Mayorista comenta que varias comisiones del tarifario son de uso excepcional y algunas podrían no estar vigentes.": ""
       },
+      "faltantes": {
+        "Se está proponiendo depurar el listado, pero aún no se ha conciliado cada tarifa con transacciones y cuentas contables.": "",
+        "Un ejecutivo recuerda una comisión cobrada una sola vez el trimestre anterior, pero no proporciona el código de tarifa.": "",
+        "Otro participante sugiere eliminarla para simplificar la experiencia; Finanzas solicita no hacerlo hasta verificar su materialidad.": "",
+        "Finanzas solicita vincular códigos de tarifa con tipos de transacción y cuentas contables antes de retirar comisiones.": ""
+      },
       "consultas": {},
       "contradicciones": []
     },
@@ -105,14 +124,18 @@
         "El equipo de tarjetas planea extender una campaña de exoneración de membresía para clientes con consumo anual superior a cierto umbral.": "",
         "Marketing anticipa mayor retención si se amplía la exoneración.": ""
       },
+      "faltantes": {
+        "El nuevo criterio está en evaluación y aún no cuenta con aprobación formal.": "",
+        "Se acordó evaluar escenarios de clientes elegibles, canibalización y valor incremental antes de solicitar aprobación.": ""
+      },
       "consultas": {},
       "contradicciones": []
     },
     "S3": {
       "nombre": "Selector de día de pago en Banca Web",
       "rank": 4,
-      "prioridad": 2.0,
-      "estado": "Por validar · contradicción resuelta",
+      "prioridad": 1.5,
+      "estado": "Hipótesis refutada en parte; por validar · contradicción resuelta",
       "fuentes": [
         "F08",
         "F09",
@@ -131,7 +154,13 @@
       },
       "hipotesis": {
         "Producto está evaluando permitir al cliente seleccionar entre tres fechas de pago en Banca Web.": "",
-        "En el acta se señala que el piloto de fechas de pago ya estaría habilitado para un grupo pequeño.": "superada por F12"
+        "En el acta se señala que el piloto de fechas de pago ya estaría habilitado para un grupo pequeño.": "refutada por F12"
+      },
+      "faltantes": {
+        "Se desconoce el efecto sobre comportamiento de pago y costo operativo.": "",
+        "La propuesta aún no incluye una simulación financiera ni un análisis de impacto en cliente.": "",
+        "Se sugiere segmentar por perfil y validar preferencia antes de inferir un impacto en satisfacción.": "",
+        "No se adjuntan evidencias de despliegue ni resultados; el área de Canales debe confirmar si el cambio llegó a producción.": ""
       },
       "consultas": {
         "Web/selector_dia_pago": "no_desplegado"
