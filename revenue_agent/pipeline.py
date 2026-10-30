@@ -68,6 +68,7 @@ class Resultado:
     senales: list[Senal]
     traza_global: list[dict]
     uso_llm: list[dict]
+    avisos: list[str] = field(default_factory=list)
 
 
 def _evento(traza: list[dict], accion: str, detalle: str, **datos) -> None:
@@ -297,9 +298,16 @@ def analizar(modo: str = "reglas", extra: list[Path] | tuple[Path, ...] = ()) ->
     traza: list[dict] = []
     uso: list[dict] = []
 
-    docs = cargar_corpus(extra)
+    avisos: list[str] = []
+    docs = cargar_corpus(extra, avisos)
+    for aviso in avisos:
+        _evento(traza, "aviso_indice", aviso)
     _evento(traza, "ingestar", f"{len(docs)} documentos leídos sin modificar.",
             fuentes=[d.id for d in docs], sha256={d.id: d.sha256[:12] for d in docs})
+    for d in docs:
+        if d.origen == "no_indexada":
+            _evento(traza, "ingestar_no_indexada",
+                    f"{d.ruta.name} no figura en ningún índice; se incorpora como {d.id} ({d.fecha}).", fuente=d.id)
 
     senales: dict[str, Senal] = {}
     descartados: list[dict] = []
@@ -385,7 +393,8 @@ def analizar(modo: str = "reglas", extra: list[Path] | tuple[Path, ...] = ()) ->
     ordenadas = sorted(senales.values(), key=lambda s: (-s.prioridad, s.id))
     for i, s in enumerate(ordenadas, 1):
         s.rank = i
-    return Resultado(modo, datetime.now().isoformat(timespec="seconds"), docs, descartados, ordenadas, traza, uso)
+    return Resultado(modo, datetime.now().isoformat(timespec="seconds"), docs, descartados, ordenadas, traza, uso,
+                     avisos)
 
 
 # ---------- Estado y cambios ----------

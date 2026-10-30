@@ -100,5 +100,59 @@ class CasosDeEnsayo(unittest.TestCase):
         self.assertIn("F23", [d["id"] for d in r.descartados])
 
 
+class ArchivoCopiadoAMano(unittest.TestCase):
+    """Un .md dejado en data/fuentes sin tocar el índice también se analiza."""
+
+    def setUp(self):
+        self.ruta = pipeline.RAIZ / "data" / "fuentes" / "F19.md"
+        self.ruta.write_bytes((EJEMPLOS / "F19_confirmacion_tasa_web.md").read_bytes())
+
+    def tearDown(self):
+        self.ruta.unlink(missing_ok=True)
+
+    def test_se_incorpora_y_se_registra(self):
+        r = pipeline.analizar("reglas")
+        f19 = next(d for d in r.docs if d.id == "F19")
+        self.assertEqual(f19.origen, "no_indexada")
+        self.assertIn("F19", [d.id for d in _senal(r, "S1").docs])
+        self.assertTrue(any(e["accion"] == "ingestar_no_indexada" for e in r.traza_global))
+
+
+class IndiceEditadoAMano(unittest.TestCase):
+    """Errores típicos al editar el índice: avisan y no detienen el análisis."""
+
+    def setUp(self):
+        self.indice = pipeline.RAIZ / "data" / "indice_fuentes.csv"
+        self.original = self.indice.read_bytes()
+        self.fuente = pipeline.RAIZ / "data" / "fuentes" / "F19.md"
+        self.fuente.write_bytes((EJEMPLOS / "F19_confirmacion_tasa_web.md").read_bytes())
+
+    def tearDown(self):
+        self.indice.write_bytes(self.original)
+        self.fuente.unlink(missing_ok=True)
+
+    def _agregar_fila(self, fila: str, codificacion="utf-8"):
+        self.indice.write_bytes(self.original + fila.encode(codificacion))
+
+    def test_titulo_con_coma_sin_comillas(self):
+        self._agregar_fila("F19,2026-09-25,Correo,Canales,Verificación, producción,fuentes/F19.md\r\n")
+        r = pipeline.analizar("reglas")
+        self.assertEqual(next(d for d in r.docs if d.id == "F19").titulo, "Verificación, producción")
+        self.assertTrue(any("comas sin comillas" in a for a in r.avisos))
+
+    def test_ruta_inexistente_no_detiene_el_analisis(self):
+        self._agregar_fila("F19,2026-09-25,Correo,Canales,Titulo,fuentes/no_existe.md\r\n")
+        r = pipeline.analizar("reglas")
+        self.assertTrue(any("no_existe.md" in a for a in r.avisos))
+        self.assertIn("F19", [d.id for d in r.docs])  # el F19.md real entra como no indexado
+
+    def test_guardado_por_excel(self):
+        lineas = self.original.decode("utf-8").replace(",", ";")
+        self.indice.write_bytes((lineas + "F19;2026-09-25;Correo;Canales;Verificación;fuentes/F19.md\r\n").encode("cp1252"))
+        r = pipeline.analizar("reglas")
+        self.assertEqual(len(r.docs), 19)
+        self.assertEqual(r.avisos, [])
+
+
 if __name__ == "__main__":
     unittest.main()

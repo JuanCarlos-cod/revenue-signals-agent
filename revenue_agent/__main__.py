@@ -16,6 +16,11 @@ from .ingesta import agregar_fuente
 
 def _imprimir_ranking(r: pipeline.Resultado, cambios: list[str]) -> None:
     print(f"\nSeñales priorizadas · modo {r.modo} · {len(r.docs)} documentos\n")
+    for aviso in r.avisos:
+        print(f"  Aviso: {aviso}")
+    for d in r.docs:
+        if d.origen == "no_indexada":
+            print(f"  Aviso: {d.ruta.name} no está en el índice; se incorporó como {d.id} ({d.fecha}).")
     for s in r.senales:
         print(f"  {s.rank}. [{s.id}] {s.nombre}")
         print(f"     prioridad {s.prioridad} · impacto {s.impacto}/5 · evidencia {s.evidencia}/5 · {s.estado}")

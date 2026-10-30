@@ -71,7 +71,9 @@ estado cambia a «Confirmada; impacto pendiente de cuantificar». Sigue sin pone
 
 1. Guárdalo como `.md` (con o sin cabecera `**ID:**`, `**Fecha:**`…; si no la tiene, el agente asigna
    el siguiente ID y la fecha de hoy).
-2. Ejecuta `python -m revenue_agent agregar ruta/al/archivo.md`.
+2. Ejecuta `python -m revenue_agent agregar ruta/al/archivo.md`. Si el evaluador prefiere copiarlo
+   directamente en `data/fuentes/`, también sirve: ejecuta `python -m revenue_agent analizar` y el
+   agente lo incorpora con un aviso, aunque no esté en el índice.
 3. Lee la lista de cambios en voz alta y abre el brief afectado.
 
 | Si el documento… | El agente debería… |

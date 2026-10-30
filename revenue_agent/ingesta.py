@@ -92,7 +92,7 @@ def segmentar(doc_id: str, texto: str) -> list[Oracion]:
 
 
 def _cargar(ruta: Path, fila: dict[str, str], origen: str) -> Documento:
-    texto = ruta.read_text(encoding="utf-8")
+    texto = leer_texto(ruta)
     meta = leer_cabecera(texto)
     doc_id = fila.get("id") or meta.get("id", "")
     return Documento(
@@ -109,11 +109,40 @@ def _cargar(ruta: Path, fila: dict[str, str], origen: str) -> Documento:
     )
 
 
-def _leer_indice(ruta: Path) -> list[dict[str, str]]:
+def leer_texto(ruta: Path) -> str:
+    """UTF-8 (con o sin BOM); si falla, la codificación de Windows con la que guardan Excel o el Bloc de notas."""
+    datos = ruta.read_bytes()
+    try:
+        return datos.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        return datos.decode("cp1252")
+
+
+def _leer_indice(ruta: Path, avisos: list[str]) -> list[dict[str, str]]:
+    """Lee un índice tolerando lo que suele romperse al editarlo a mano o con Excel:
+    separador ';', codificación de Windows y títulos con comas sin comillas."""
     if not ruta.exists():
         return []
-    with ruta.open(encoding="utf-8", newline="") as f:
-        return list(csv.DictReader(f))
+    texto = leer_texto(ruta)
+    primera = texto.splitlines()[0] if texto else ""
+    separador = ";" if primera.count(";") > primera.count(",") else ","
+    filas = list(csv.reader(texto.splitlines(), delimiter=separador))
+    if not filas:
+        return []
+    cabecera = [c.strip().lower() for c in filas[0]]
+    resultado = []
+    for n, valores in enumerate(filas[1:], start=2):
+        if not any(v.strip() for v in valores):
+            continue
+        if len(valores) > len(cabecera) and cabecera == CAMPOS_INDICE:
+            # Coma dentro del título: id, fecha, tipo y área van primero y el archivo al final.
+            valores = valores[:4] + [separador.join(valores[4:-1]), valores[-1]]
+            avisos.append(f"{ruta.name}, línea {n}: había comas sin comillas en el título; se reconstruyó.")
+        if len(valores) != len(cabecera):
+            avisos.append(f"{ruta.name}, línea {n}: {len(valores)} columnas en vez de {len(cabecera)}; se omite.")
+            continue
+        resultado.append({k: v.strip() for k, v in zip(cabecera, valores)})
+    return resultado
 
 
 def siguiente_id(ids: list[str]) -> str:
@@ -123,8 +152,9 @@ def siguiente_id(ids: list[str]) -> str:
 
 def _fila_para(ruta: Path, ids_existentes: list[str]) -> dict[str, str]:
     """Metadatos de un documento nuevo: usa su cabecera y completa lo que falte."""
-    meta = leer_cabecera(ruta.read_text(encoding="utf-8"))
-    doc_id = meta.get("id", "")
+    meta = leer_cabecera(leer_texto(ruta))
+    nombre = re.match(r"(F\d+)", ruta.stem)
+    doc_id = meta.get("id") or (nombre.group(1) if nombre else "")
     if not doc_id or doc_id in ids_existentes:
         doc_id = siguiente_id(ids_existentes)
     return {
@@ -136,10 +166,29 @@ def _fila_para(ruta: Path, ids_existentes: list[str]) -> dict[str, str]:
     }
 
 
-def cargar_corpus(extra: list[Path] | tuple[Path, ...] = ()) -> list[Documento]:
-    """Paquete original + fuentes adicionales registradas + rutas extra (sin persistir)."""
-    docs = [_cargar(INDICE.parent / f["archivo"], f, "paquete") for f in _leer_indice(INDICE)]
-    docs += [_cargar(DIR_ADICIONALES / f["archivo"], f, "adicional") for f in _leer_indice(INDICE_ADICIONAL)]
+def cargar_corpus(extra: list[Path] | tuple[Path, ...] = (), avisos: list[str] | None = None) -> list[Documento]:
+    """Paquete original + fuentes adicionales registradas + .md copiados a mano sin indexar
+    + rutas extra (sin persistir). Los problemas del índice se anotan en `avisos` sin detener nada."""
+    avisos = [] if avisos is None else avisos
+    docs: list[Documento] = []
+    for indice, carpeta, origen in ((INDICE, INDICE.parent, "paquete"),
+                                    (INDICE_ADICIONAL, DIR_ADICIONALES, "adicional")):
+        for fila in _leer_indice(indice, avisos):
+            ruta = carpeta / fila.get("archivo", "")
+            if not fila.get("archivo") or not ruta.is_file():
+                avisos.append(f"{indice.name}: {fila.get('id', '?')} apunta a '{fila.get('archivo', '')}', "
+                              "que no existe; se omite esa fila.")
+                continue
+            if fila.get("id") in {d.id for d in docs}:
+                avisos.append(f"{indice.name}: el ID {fila['id']} está repetido; se omite la segunda fila.")
+                continue
+            docs.append(_cargar(ruta, fila, origen))
+    # Un archivo dejado en la carpeta sin actualizar el índice no debe ignorarse en silencio.
+    leidas = {d.ruta.resolve() for d in docs}
+    for carpeta in (DIR_DATA / "fuentes", DIR_ADICIONALES):
+        for ruta in sorted(carpeta.glob("*.md")) if carpeta.exists() else []:
+            if ruta.resolve() not in leidas:
+                docs.append(_cargar(ruta, _fila_para(ruta, [d.id for d in docs]), "no_indexada"))
     for ruta in extra:
         fila = _fila_para(Path(ruta), [d.id for d in docs])
         docs.append(_cargar(Path(ruta), fila, "adicional"))

@@ -33,6 +33,15 @@ python -m unittest discover -s tests -v
 
 Todos los comandos aceptan `--modo reglas` (por defecto) o `--modo llm` (ver más abajo).
 
+**Otra forma de incorporar fuentes:** copiar el `.md` directamente en `data/fuentes/` y ejecutar
+`analizar`. Aunque no figure en `indice_fuentes.csv`, se incorpora: toma el ID y la fecha de su
+cabecera (o del nombre del archivo, como `F19.md`; si no hay, el siguiente ID libre y la fecha de hoy).
+Se muestra un aviso y queda registrado en `trazabilidad/global.jsonl`.
+
+También se puede añadir una fila a `indice_fuentes.csv`. La lectura del índice tolera los errores
+habituales al editarlo a mano: guardado desde Excel (separador `;` y codificación de Windows), títulos
+con comas sin comillas y rutas que no existen. En vez de detenerse, el agente muestra un aviso y sigue.
+
 ### Salidas
 
 ```
