@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-30T12:42:11",
+  "generado": "2026-10-30T12:58:07",
   "modo": "reglas",
   "documentos": [
     "F01",
@@ -20,7 +20,7 @@
     "F16",
     "F17",
     "F18",
-    "F19"
+    "F20"
   ],
   "descartados": [
     "F13",
@@ -39,7 +39,7 @@
         "F02",
         "F03",
         "F04",
-        "F19"
+        "F20"
       ],
       "conteo": {
         "hecho": 7,
@@ -51,8 +51,8 @@
         "negacion_impacto": 0
       },
       "hipotesis": {
-        "En una revisión de configuración, Andrea comenta que la tasa registrada parece coincidir con el valor mensual informado en la ficha comercial.": "confirmada por F19",
-        "Operaciones detectó que la prima promedio registrada para algunos créditos originados en Web es inferior a la de operaciones aparentemente similares.": "confirmada por F19",
+        "En una revisión de configuración, Andrea comenta que la tasa registrada parece coincidir con el valor mensual informado en la ficha comercial.": "confirmada por F20",
+        "Operaciones detectó que la prima promedio registrada para algunos créditos originados en Web es inferior a la de operaciones aparentemente similares.": "confirmada por F20",
         "Además, la aseguradora podría reclamar las primas no cobradas, porque la cobertura se calcula sobre el saldo asegurado completo.": ""
       },
       "faltantes": {
@@ -63,7 +63,7 @@
         "Se solicita análisis transaccional para confirmar una eventual desviación.": "",
         "El archivo adjunto citado en el correo no se encuentra en esta carpeta.": "",
         "El equipo de operaciones no dispone todavía de una muestra de operaciones con idéntico saldo y periodo de cobertura.": "",
-        "Aún no se ha definido si la diferencia se recuperará de los clientes o la asumirá el banco; se solicita a Legal y Producto una decisión antes\r\n del cierre de octubre.": ""
+        "Aún no se ha definido si la diferencia se recuperará de los clientes o la asumirá el banco; se solicita a Legal y Producto una decisión antes\n del cierre de octubre.": ""
       },
       "consultas": {
         "Web/rate_input": "no_verificado",
