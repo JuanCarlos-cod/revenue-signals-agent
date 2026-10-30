@@ -144,7 +144,8 @@ def _marcar_confirmaciones(s: Senal) -> None:
 
 
 def _detectar_contradicciones(s: Senal) -> None:
-    """Una corrección que alude a una fuente previa se enfrenta a la hipótesis anterior más afín."""
+    """Una corrección que alude a una fuente previa se enfrenta a la afirmación anterior más afín
+    (hipótesis o hecho): gana la que comparte más raíces, y ante empate la más reciente."""
     for doc in s.docs:
         correcciones = [a for a in s.afirmaciones if a.doc_id == doc.id and a.tipo == "correccion"]
         explicitas = [a for a in correcciones if _REFERENCIA_PREVIA.search(normalizar(a.cita))]
@@ -159,8 +160,9 @@ def _detectar_contradicciones(s: Senal) -> None:
             if previo.orden >= doc.orden:
                 continue
             bonus = 1 if normalizar(previo.tipo).split()[0] in menciona_tipo else 0
+            bonus += 1 if normalizar(previo.area) in menciona_tipo else 0
             for hip in s.afirmaciones:
-                if hip.doc_id == previo.id and hip.tipo == "hipotesis":
+                if hip.doc_id == previo.id and hip.tipo in ("hipotesis", "hecho"):
                     comun = base & _raices(hip.cita)
                     if comun:
                         candidatos.append((len(comun) + bonus, previo.orden, previo, hip))
@@ -200,8 +202,16 @@ def _decidir_herramienta(s: Senal) -> None:
         s.consultas.append(consulta)
         comando = " ".join(f'"{a}"' if " " in a else a for a in ejecucion["comando"])
         _evento(s.traza, "consultar_herramienta", interpretacion, comando=comando, respuesta=ejecucion["respuesta"])
+        revision = (ejecucion["respuesta"].get("registros") or [{}])[0].get("ultima_revision", "")
         for contradiccion in s.contradicciones:
-            if contradiccion["fuente_corregida"] == afirmacion.doc_id and codigo == "no_desplegado":
+            fecha_corrige = next(d.fecha for d in s.docs if d.id == contradiccion["fuente_que_corrige"])
+            if revision and revision < fecha_corrige:
+                contradiccion["verificacion"] = (
+                    f"El registro de la herramienta ({revision}) es anterior a {contradiccion['fuente_que_corrige']} "
+                    f"({fecha_corrige}): no permite validar la corrección. Pendiente: confirmarla con el área.")
+                _evento(s.traza, "verificar_contradiccion", contradiccion["verificacion"],
+                        fuentes=[contradiccion["fuente_corregida"], contradiccion["fuente_que_corrige"]])
+            elif contradiccion["fuente_corregida"] == afirmacion.doc_id and codigo == "no_desplegado":
                 contradiccion["verificacion"] = (f"La herramienta respalda a {contradiccion['fuente_que_corrige']}: "
                                                  f"{interpretacion}")
                 _evento(s.traza, "verificar_contradiccion", contradiccion["verificacion"],
@@ -419,7 +429,8 @@ def comparar(anterior: dict, actual: dict) -> list[str]:
             if f not in p["fuentes"]:
                 cambios.append(f"{sid}: incorpora {f}.")
         if s["prioridad"] != p["prioridad"]:
-            cambios.append(f"{sid}: prioridad {p['prioridad']} → {s['prioridad']} (puesto {p['rank']} → {s['rank']}).")
+            puesto = f" (puesto {p['rank']} → {s['rank']})" if s["rank"] != p["rank"] else ""
+            cambios.append(f"{sid}: prioridad {p['prioridad']} → {s['prioridad']}{puesto}.")
         elif s["rank"] != p["rank"]:
             cambios.append(f"{sid}: pasa del puesto {p['rank']} al {s['rank']} por la entrada de otras señales.")
         if s["estado"] != p["estado"]:

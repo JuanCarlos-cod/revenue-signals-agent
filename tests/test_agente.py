@@ -82,5 +82,23 @@ class EvidenciaNueva(unittest.TestCase):
         self.assertIn("Nueva señal E-F20", texto)
 
 
+class CasosDeEnsayo(unittest.TestCase):
+    def test_participio_no_es_faltante(self):
+        r = pipeline.analizar("reglas", extra=[EJEMPLOS / "F21_muestra_ajustada_web.md"])
+        f21 = [a for a in _senal(r, "S1").afirmaciones if a.doc_id == "F21"]
+        self.assertEqual(f21[0].tipo, "hecho")  # "la muestra solicitada" no pide nada
+
+    def test_correccion_de_un_hecho_con_registro_anterior(self):
+        r = pipeline.analizar("reglas", extra=[EJEMPLOS / "F22_selector_en_produccion.md"])
+        s3 = _senal(r, "S3")
+        nueva = next(c for c in s3.contradicciones if c["fuente_que_corrige"] == "F22")
+        self.assertEqual(nueva["fuente_corregida"], "F12")
+        self.assertIn("es anterior a F22", nueva["verificacion"])
+
+    def test_ruido_con_palabra_tarifa(self):
+        r = pipeline.analizar("reglas", extra=[EJEMPLOS / "F23_tarifa_estacionamiento.md"])
+        self.assertIn("F23", [d["id"] for d in r.descartados])
+
+
 if __name__ == "__main__":
     unittest.main()

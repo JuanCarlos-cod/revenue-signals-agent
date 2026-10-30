@@ -1,6 +1,6 @@
 # Señales priorizadas
 
-Generado: 2026-10-29T21:46:52 · Modo: `reglas` · Documentos analizados: 18
+Generado: 2026-10-29T22:13:32 · Modo: `reglas` · Documentos analizados: 18
 
 Prioridad = impacto (1–5, catálogo) × confianza (0,5 + 0,1 × solidez de la evidencia).
 

@@ -30,7 +30,7 @@ _REGLAS: list[tuple[str, list[str]]] = [
                   r"no dispone", r"no se dispone", r"no se adjunta", r"se desconoce", r"\baun no\b",
                   r"todavia no", r"no incluye", r"deben? verificarse", r"debe confirmar",
                   r"no se ha (conciliado|cuantificado|estimado|medido|validado)", r"no proporciona",
-                  r"\bfalta", r"pendiente", r"solicita", r"antes de (concluir|solicitar|retirar|inferir)",
+                  r"\bfalta", r"pendiente", r"\bsolicita\b", r"antes de (concluir|solicitar|retirar|inferir)",
                   r"sin aprobacion"]),
     ("confirmacion", [r"se confirmo", r"quedo confirmad", r"confirmamos", r"\bverifico\b",
                       r"esta activ[ao] en produccion"]),
